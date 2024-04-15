@@ -370,131 +370,6 @@ std::vector<UCN> Coincidence::CoincidenceVectorPair()
     return CoincidenceVector;
 }
 
-/****Implementing Frank's Method for Coincidence****/
-
-/*std::vector<UCN> Coincidence::CoincidenceVectorPair()
-{
-
-    // int photon_cut = 8.;
-    int photon_count = 0.;
-    int photon_threshold = 8.0;
-    int photon_upper = 70.0;
-    double rate = 0;
-    double OrphanPhoton = 0;
-    double OrphanPhotonTime = 0;
-    std::vector<UCN> CoincidenceVector;
-
-    sort(vector_pair.begin(), vector_pair.end());
-
-    UCN event;
-
-    double coincidence_window = 100.;  // in ns
-    double telescoping_window = 1000.; // in ns
-
-    event.StartTime = -999;
-    event.EventLength = -999;
-    event.ClusterSize = -999;
-    int initial_pmt = 0;
-    event.Na = 0;
-    event.Nb = 0;
-    event.Npile = 0;
-
-    for (int i = 0; i < vector_pair.size(); i++)
-    {
-
-        double event_length = 0.;
-        double event_time = 0.;
-
-        int NpE = 1.;
-        int k = 0.;
-        int NpA = 1.;
-        int NpB = 1.;
-        int photon_count = 1.;
-        double PileCorrectedPhotons = 0;
-
-        double T_diff = (vector_pair[i + 1].first - vector_pair[i].first) * 1e+9;
-        int D_diff = vector_pair[i + 1].second - vector_pair[i].second;
-
-        if (T_diff < coincidence_window) // There is a Coincidence
-
-        {
-
-            // std::cout << D_diff << std::endl;
-            k = i;
-            //  std::cout << "GotHere" << '\t' << i << '\t' << vector_pair.size() << std::endl;
-            if (D_diff != 0)
-            {
-                while ((vector_pair[k + 1].first - vector_pair[k].first) * 1e+9 < telescoping_window)
-                {
-
-                    photon_count++;
-
-                    k++;
-                    if (vector_pair[k].second == 1)
-                    {
-                        NpA++;
-                    }
-                    else if (vector_pair[k].second == 2)
-                    {
-                        NpB++;
-                    }
-                    if (k > vector_pair.size())
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (photon_count >= photon_threshold)
-            {
-                if (i + photon_count > vector_pair.size())
-                {
-                    continue;
-                }
-
-                event_length = (vector_pair[i + photon_count].first - vector_pair[i].first) * 1e+9;
-                event_time = vector_pair[i].first;
-
-                NpE = photon_count;
-                PileCorrectedPhotons = NpE - (event_length * 1e-9) / rate + (float)rand() / (float)RAND_MAX;
-                // Photons" << '\t' << NpE << '\t' << PileCorrectedPhotons << std::endl;
-                event.StartTime = event_time;
-                event.EventLength = event_length + 1000.;
-                event.ClusterSize = PileCorrectedPhotons;
-                event.Na = NpA;
-                event.Nb = NpB;
-                event.Npile = PileCorrectedPhotons;
-                CoincidenceVector.push_back(event);
-                i += (photon_count);
-                if (i > vector_pair.size())
-                {
-                    continue;
-                }
-            }
-        }
-        else if (photon_count < photon_threshold)
-        {
-            if (OrphanPhoton == 0)
-            {
-                rate = vector_pair[i].first - OrphanPhotonTime;
-            }
-            else if (OrphanPhoton < 100.)
-            {
-                rate = ((OrphanPhoton - 1) / OrphanPhoton) * rate +
-                       (1 / OrphanPhoton) * (vector_pair[i].first - OrphanPhoton);
-            }
-            else
-            {
-                rate = (0.99) * rate + (0.01) * (vector_pair[i].first - OrphanPhotonTime);
-            }
-
-            OrphanPhotonTime = vector_pair[i].first;
-            OrphanPhotonTime++;
-        }
-    }
-    return CoincidenceVector;
-}*/
-
 void Coincidence::PrintElements()
 {
 
@@ -770,7 +645,8 @@ int main(int argc, char *argv[])
         TTreeReaderValue<int> detnum2(mcs_2, "channel");
         TTreeReaderValue<int> tag2(mcs_2, "tag");
 
-        double timestart1, timestart;
+        double timestart1 = 0;
+        double timestart = 0;
 
         /* if (!CheckValue(detnum))
              return false;
@@ -827,7 +703,7 @@ int main(int argc, char *argv[])
 
         // std::vector<std::vector<std::pair<double, int>>> vec_pairs;
 
-        while (mcs_0.Next())
+       /* while (mcs_0.Next())
         {
 
             if (*tag == 4)
@@ -845,7 +721,7 @@ int main(int argc, char *argv[])
                 timestart1 = *time1;
                 break;
             }
-        }
+        }*/
 
         while (mcs_0.Next())
         {
