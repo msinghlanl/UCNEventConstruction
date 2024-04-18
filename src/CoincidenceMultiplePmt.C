@@ -230,7 +230,6 @@ std::vector<std::pair<double, int>> ElectronicsDeadTime::ElectronicsDeadtimeCorr
     return output;
 }
 
-/*Implementing Lara's Coincidence Algorithm*/
 std::vector<UCN> Coincidence::CoincidenceVectorPair()
 {
     sort(vector_pair.begin(), vector_pair.end());
@@ -582,6 +581,35 @@ int main(int argc, char *argv[])
 
     // int file_number = n;
 
+    // Open the file containing the tree.
+
+    string file_directory = "/Users/msingh/Desktop/UCNTau/data/replayed_data/";
+
+    // string n1 = std::to_string(n);
+    string file_type = "processed_output_";
+    string file_suffix = ".root";
+
+    string file_input = file_directory + file_type + n1 + file_suffix;
+
+    string file_output_directory = "/Users/msingh/Desktop/UCNTau/data/coincidence_files/";
+    string file_output_type = "processed_output_coincidences_PE_8_tagbit_check";
+
+    string file_output = file_output_directory + file_output_type + n1 + file_suffix;
+    // TFile *myFile = TFile::Open("/Users/msingh/Desktop/UCNTau/data/replayed_data/processed_output_30915.root");
+
+    Bool_t exists = gSystem->AccessPathName(file_input.c_str());
+
+    if (exists)
+    {
+        std::cerr << "Error: File '" << file_input << "' does not exist." << std::endl;
+        return 1;
+    }
+
+    std::cout << "File '" << file_input << "' exists. Proceeding with program execution..." << std::endl;
+    std::cout << "File Loaded :: " << n1 << std::endl;
+
+    TFile *myFile = TFile::Open(file_input.c_str());
+
     auto PMT1 = TH1F("PMT1", "PMT1", 4000, 0, 4000);
     auto PMT2 = TH1F("PMT2", "PMT2", 4000, 0, 4000);
     auto PMT3 = TH1F("PMT3", "PMT3", 4000, 0, 4000);
@@ -595,25 +623,6 @@ int main(int argc, char *argv[])
     auto h_AC1 = TH1F("h_AC1", "h_AC1", 4000, 0, 4000);
     auto h_AC2 = TH1F("h_AC2", "h_AC2", 4000, 0, 4000);
     auto h_AC3 = TH1F("h_AC3", "h_AC3", 4000, 0, 4000);
-
-    // Open the file containing the tree.
-
-    string file_directory = "/Users/msingh/Desktop/UCNTau/data/replayed_data/";
-
-    // string n1 = std::to_string(n);
-    string file_type = "processed_output_";
-    string file_suffix = ".root";
-
-    string file_input = file_directory + file_type + n1 + file_suffix;
-
-    string file_output_directory = "/Users/msingh/Desktop/UCNTau/data/coincidence_files/";
-    string file_output_type = "processed_output_coincidences_PE_8_offset_check";
-
-    string file_output = file_output_directory + file_output_type + n1 + file_suffix;
-    // TFile *myFile = TFile::Open("/Users/msingh/Desktop/UCNTau/data/replayed_data/processed_output_30915.root");
-
-    std::cout << "File Loaded :: " << n1 << std::endl;
-    TFile *myFile = TFile::Open(file_input.c_str());
 
     bool tree1 = myFile->GetListOfKeys()->Contains("tmcs_0");
     bool tree2 = myFile->GetListOfKeys()->Contains("tmcs_1");
@@ -647,19 +656,6 @@ int main(int argc, char *argv[])
 
         double timestart1 = 0;
         double timestart = 0;
-
-        /* if (!CheckValue(detnum))
-             return false;
-         if (!CheckValue(time))
-             return false;
-         if (!CheckValue(detnum1))
-             return false;
-         if (!CheckValue(time1))
-             return false;
-         if (!CheckValue(detnum2))
-             return false;
-         if (!CheckValue(time2))
-             return false;*/
 
         int count1 = 0;
         int count2 = 0;
@@ -703,10 +699,10 @@ int main(int argc, char *argv[])
 
         // std::vector<std::vector<std::pair<double, int>>> vec_pairs;
 
-       /* while (mcs_0.Next())
+        while (mcs_0.Next())
         {
 
-            if (*tag == 4)
+            if ((*tag & 0x4) == 0x4)
             {
                 timestart = *time;
                 break;
@@ -716,12 +712,28 @@ int main(int argc, char *argv[])
         while (mcs_1.Next())
         {
 
-            if (*tag1 == 4)
+            if ((*tag1 & 0x4) == 0x4)
             {
                 timestart1 = *time1;
                 break;
             }
-        }*/
+        }
+
+        std::cout << "TimeStart MCS0" << '\t' << timestart << std::endl;
+        std::cout << "TimeStart MCS1" << '\t' << timestart1 << std::endl;
+
+        double offset = 0;
+
+        /* if (timestart > timestart1)
+         {
+
+             offset = timestart1;
+         }
+
+         else
+         {
+             offset = timestart;
+         }*/
 
         while (mcs_0.Next())
         {
@@ -781,33 +793,26 @@ int main(int argc, char *argv[])
             if (*detnum1 == 11)
             {
                 timing5 = *time1 - timestart;
-                if (timing5 > 0)
-                {
-                    v5.push_back(timing5);
-                    PMT5.Fill(timing5);
-                    vector_pair3.push_back(make_pair(timing5, 5.));
-                }
+
+                v5.push_back(timing5);
+                PMT5.Fill(timing5);
+                vector_pair3.push_back(make_pair(timing5, 5.));
             }
 
             else if (*detnum1 == 12)
             {
                 timing6 = *time1 - timestart;
-                if (timing6 > 0)
-                {
-                    v6.push_back(timing6);
-                    PMT6.Fill(timing6);
-                    vector_pair3.push_back(make_pair(timing6, 6.));
-                }
+
+                v6.push_back(timing6);
+                PMT6.Fill(timing6);
+                vector_pair3.push_back(make_pair(timing6, 6.));
             }
             else if (*detnum1 == 13)
             {
                 timing7 = *time1 - timestart;
-                if (timing7 > 0)
-                {
-                    v7.push_back(timing7);
-                    PMT7.Fill(timing7);
-                    vector_pair4.push_back(make_pair(timing7, 7.));
-                }
+                v7.push_back(timing7);
+                PMT7.Fill(timing7);
+                vector_pair4.push_back(make_pair(timing7, 7.));
             }
             else if (*detnum1 == 14)
             {
@@ -1176,6 +1181,8 @@ int main(int argc, char *argv[])
         h_AC3.Write();
 
         f.Close();
+
+        return 0;
     }
     else
     {
