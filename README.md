@@ -1,0 +1,1 @@
+This repository is developed to construct ultracold neutron events from the hit-photon array of two paried PMTs. The code begins with reading single TTress from the blinded replayed root files. The hits are stored in the form of a vector of pairs, where the pair comprises of the time stamp of the photon hit and the PMT it fired in. 
